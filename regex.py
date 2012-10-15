@@ -1,4 +1,5 @@
 from collections import deque
+import fa
 
 def process(string):
 	exp = list(string)
@@ -68,7 +69,9 @@ def  preprocess(string):
 # combine each segment
 def postprocess(charStack):
 	postfix = charStack[0]
-	for i in range(1, len(postfix)):
+	if len(charStack)==1:
+		return postfix
+	for i in range(1, len(charStack)-1):
 		postfix += charStack[i] + '+'
 	return postfix
 
@@ -83,5 +86,13 @@ def toPostfix(string):
 def  show(op, charStack, operatorStack):
 	print op, ':', charStack, operatorStack
 
-print toPostfix('(ab)c*(c|d)*')
 
+#	-------------------------this is split line----------------------------
+
+def toNFA(exp):
+	EPSILON = 'EPSILON'
+	operators = ('*', '+', '|')
+
+
+exp = toPostfix('a')
+toNFA(exp)
