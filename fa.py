@@ -1,3 +1,5 @@
+from collections import deque
+
 class FA(object):
 	namesize = 0
 	EPSILON = 'EPSILON'
@@ -7,7 +9,8 @@ class FA(object):
 		self.rules = dict()
 		self.startState = -1
 		self.finalState = -1
-		self.rules[self.__class__.namesize] = [arg, self.__class__.namesize+1]
+		self.rules[self.__class__.namesize] = [[arg, self.__class__.namesize+1]]
+		self.rules[self.__class__.namesize+1] = list()
 		self.startState = self.__class__.namesize
 		self.finalState = self.__class__.namesize+1
 		self.__class__.namesize += 2
@@ -25,9 +28,10 @@ class FA(object):
 		self.rules[news].append([self.__class__.EPSILON, newf])
 		self.rules[f].append([self.__class__.EPSILON, newf])
 		self.rules[f].append([self.__class__.EPSILON, s])
+		self.rules[newf] = list()
 		self.startState = news
 		self.finalState = newf
-		self.namesize += 2
+		self.__class__.namesize += 2
 		
 	def join(self, fa):
 		self.rules.update(fa.rules)
@@ -56,14 +60,49 @@ class FA(object):
 		self.rules[news].append([self.__class__.EPSILON, s2])
 		self.rules[f1].append([self.__class__.EPSILON, newf])
 		self.rules[f2].append([self.__class__.EPSILON, newf])
+		self.rules[newf] = list()
 		self.startState = news
 		self.finalState = newf
-		self.namesize += 2
+		self.__class__.namesize += 2
 
-	def toDFA(self):
-		pass
+	def toDFA(self, exp):
+		operators = ('*', '+', '|')
+		alphabet = set(exp) - set(operators)
+		alphabet = list(alphabet)
+		count = 65
+		key = chr(count)
+		states = dict()
+		states[key] = self.findEpsilon([self.startState])
+		paths = dict()
+		queue = deque(list())
+		queue.append(key)
+		while len(queue):
+			newkey = queue.popleft()
+			for c in alphabet:
+				newstate = self.findCondition(states[newkey], c)
+				newstate = self.findEpsilon(newstate)
+
+
+
+	def findEpsilon(self, outset):
+		result = set(outset)
+		for i in outset:
+			for rule in self.rules[i]:
+				if (rule[0]==self.__class__.EPSILON) & (rule[1] not in result):
+					result.add(rule[1])
+					result.union(self.findEpsilon(result))
+		return result
+
+	def findCondition(self, outset, c):
+		result = set()
+		for i in outset:
+			for rule in self.rules[i]:
+				if (rule[0]==c) & (rule[1] not in result):
+					result.add(rule[1])
+		return result
 
 	def accept(self):
+
 		pass		
 
 	def show(self):
@@ -71,34 +110,31 @@ class FA(object):
 			print key, ':', self.rules[key]
 		print 'start state:', self.startState
 		print 'final state:', self.finalState
+		print 'namesize:', self.__class__.namesize
 
 
 def toNFA(exp):
 	operators = ('*', '+', '|')
 	stack = list()
 	for op in exp:
-		print op
 		if op not in operators:
 			stack.append(FA(op))
-			stack[0].show()
 		elif op == '*':
 			fa = stack.pop()
 			fa.closure()
 			stack.append(fa)	
-			stack[0].show()
 		elif op == '+':
 			fa1 = stack.pop()			
 			fa2 = stack.pop()
 			fa2.join(fa1)
 			stack.append(fa2)
-			stack[0].show()
 		elif op == '|':
 			fa1 = stack.pop()
 			fa2 = stack.pop()
 			fa2.union(fa1)
 			stack.append(fa2)
-			stack[0].show()
 	return stack[0]
 	
-fa = toNFA('a*b|')
-# fa.show()
+fa = toNFA('ab|')
+fa.show()
+fa.toDFA('ab|')
