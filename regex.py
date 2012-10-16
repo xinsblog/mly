@@ -87,12 +87,4 @@ def  show(op, charStack, operatorStack):
 	print op, ':', charStack, operatorStack
 
 
-#	-------------------------this is split line----------------------------
-
-def toNFA(exp):
-	EPSILON = 'EPSILON'
-	operators = ('*', '+', '|')
-
-
 exp = toPostfix('a')
-toNFA(exp)
