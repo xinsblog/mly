@@ -65,15 +65,25 @@ class FA(object):
 		self.finalState = newf
 		self.__class__.namesize += 2
 
+	def show(self):
+		for key in self.rules.keys():
+			print key, ':', self.rules[key]
+		print 'start state:', self.startState
+		print 'final state:', self.finalState
+		print 'namesize:', self.__class__.namesize
+
 	def toDFA(self, exp):
 		operators = ('*', '+', '|')
 		alphabet = set(exp) - set(operators)
 		alphabet = list(alphabet)
 		count = 65
 		key = chr(count)
-		states = dict()
+		# mapping from new keys to the aggregated states
+		states = dict() 	
 		states[key] = self.findEpsilon([self.startState])
+		# record relations between keys
 		paths = dict()
+		# store the keys to be processed
 		queue = deque(list())
 		queue.append(key)
 		while len(queue):
@@ -81,17 +91,48 @@ class FA(object):
 			for c in alphabet:
 				newstate = self.findCondition(states[newkey], c)
 				newstate = self.findEpsilon(newstate)
+				key = self.getKey(states, newstate)
+				if key==0:
+					count += 1
+					key = chr(count)
+					states[key] = newstate
+					queue.append(key)
+				if paths.has_key(newkey)==False:
+					paths[newkey] = dict()
+				paths[newkey][c] = key
+		sStates = list()
+		fStates = list()
+		for key in states.keys():
+			if self.startState in states[key]:
+				sStates.append(key)
+			if self.finalState in states[key]:
+				fStates.append(key)
+		print 'state:', states
+		print 'paths:', paths
+		print 'starting states:', sStates
+		print 'ending states:', fStates
+		dfa = {'state':states, 'paths':paths, 'sStates':sStates, 'fStates':fStates}
+		return dfa
 
+	def getKey(self, states, state):
+		for key in states.keys():
+			if state == states[key]:
+				return key
+		return 0
 
 
 	def findEpsilon(self, outset):
 		result = set(outset)
-		for i in outset:
-			for rule in self.rules[i]:
-				if (rule[0]==self.__class__.EPSILON) & (rule[1] not in result):
-					result.add(rule[1])
-					result.union(self.findEpsilon(result))
-		return result
+		while True:
+			flag = True
+			for i in outset:
+				for rule in self.rules[i]:
+					if (rule[0]==self.__class__.EPSILON) & (rule[1] not in result):
+						result.add(rule[1])
+						flag = False
+			outset = list(result)
+			if flag:
+				return result
 
 	def findCondition(self, outset, c):
 		result = set()
@@ -101,16 +142,28 @@ class FA(object):
 					result.add(rule[1])
 		return result
 
-	def accept(self):
+	def accept(self, dfa, string):
+		exp = list(string)
+		reached = list()
+		paths = dfa['paths']
+		for s in dfa['sStates']:
+			flag = True
+			for op in exp:
+				if paths[s].has_key(op):
+					s = paths[s][op]
+				else:
+				 	flag = False
+			if flag & (s in dfa['fStates']):
+				reached.append(s)
+		if len(reached):
+			return True
+		else:
+			return False
 
-		pass		
+	def minStates(self, dfa):
+		pass
 
-	def show(self):
-		for key in self.rules.keys():
-			print key, ':', self.rules[key]
-		print 'start state:', self.startState
-		print 'final state:', self.finalState
-		print 'namesize:', self.__class__.namesize
+	
 
 
 def toNFA(exp):
@@ -135,6 +188,7 @@ def toNFA(exp):
 			stack.append(fa2)
 	return stack[0]
 	
-fa = toNFA('ab|')
-fa.show()
-fa.toDFA('ab|')
+exp = 'ab|'
+fa = toNFA(exp)
+dfa = fa.toDFA(exp)
+print fa.accept(dfa, 'a')
