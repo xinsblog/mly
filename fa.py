@@ -107,11 +107,11 @@ class FA(object):
 				sStates.append(key)
 			if self.finalState in states[key]:
 				fStates.append(key)
-		print 'state:', states
-		print 'paths:', paths
-		print 'starting states:', sStates
-		print 'ending states:', fStates
-		dfa = {'state':states, 'paths':paths, 'sStates':sStates, 'fStates':fStates}
+		# print 'state:', states
+		# print 'paths:', paths
+		# print 'starting states:', sStates
+		# print 'ending states:', fStates
+		dfa = {'state':states, 'paths':paths, 'sStates':sStates, 'fStates':fStates, 'alphabet':alphabet}
 		return dfa
 
 	def getKey(self, states, state):
@@ -161,10 +161,70 @@ class FA(object):
 			return False
 
 	def minStates(self, dfa):
-		pass
+		paths = dfa['paths']
+		fStates = set(dfa['fStates'])	
+		states = set(paths.keys())
+		nfStates = states - fStates
+		partition = list()
+		partition.append(nfStates)
+		partition.append(fStates)
+		flag = True
+		while flag:
+			flag = False
+			newpartition = list()
+			for i in range(len(partition)):
+				part = dict()
+				for s in partition[i]:
+					part[s] = self.getPart(s, dfa, partition)
+				mapping = list()
+				newpart = list()
+				for s in partition[i]:
+					if part[s] not in mapping:
+						mapping.append(part[s])
+						newpart.append(set())
+				for s in partition[i]:
+					for j in range(len(mapping)):
+						if part[s]==mapping[j]:
+							newpart[j].add(s)
+				if len(newpart)>1:
+					flag = True
+				newpartition.extend(newpart)
+			partition = newpartition
+		newstates = [list(part)[0] for part in partition]
+		category = {list(part)[0]:list(part)[1:] for part in partition}
+		print category
+		newpaths = dict()
+		alphabet = dfa['alphabet']
+		for state in newstates:
+			newpaths[state] = dict()
+			for a in alphabet:
+				b = paths[state][a]
+				if b in newstates:
+					newpaths[state][a] = b
+				else:
+					for key in category.keys():
+						if b in category[key]:
+							newpaths[state][a] = key
+							break
+		newfStates = set()
+		for state in newstates:
+			if state in fStates:
+				newfStates.add(state)
+		newsStates = set(newstates) - newfStates
+		print newsStates
+		print newfStates
 
-	
-
+	def getPart(self, state, dfa, partition):
+		paths = dfa['paths']
+		alphabet = dfa['alphabet']
+		result = list()
+		for a in alphabet:
+			dist = paths[state][a]
+			for i in range(len(partition)):
+				if dist in partition[i]:
+					result.append(i)
+					break
+		return result
 
 def toNFA(exp):
 	operators = ('*', '+', '|')
@@ -188,7 +248,9 @@ def toNFA(exp):
 			stack.append(fa2)
 	return stack[0]
 	
-exp = 'ab|'
+exp = 'ab|*a+b+b+'
 fa = toNFA(exp)
 dfa = fa.toDFA(exp)
-print fa.accept(dfa, 'a')
+# fa.accept(dfa, 'ac')
+print dfa['paths']
+fa.minStates(dfa)
