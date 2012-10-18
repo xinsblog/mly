@@ -35,6 +35,7 @@ class DFA(object):
 		partition.append(nfStates)
 		partition.append(fStates)
 		flag = True
+		# partition process start
 		while flag:
 			flag = False
 			newpartition = list()
@@ -56,6 +57,8 @@ class DFA(object):
 					flag = True
 				newpartition.extend(newpart)
 			partition = newpartition
+			# print partition
+		# partition process end
 		newstates = [list(part)[0] for part in partition]
 		category = {list(part)[0]:list(part)[1:] for part in partition}
 		newpaths = dict()
