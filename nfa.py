@@ -135,8 +135,9 @@ class NFA(object):
 		return result
 
 	def show(self):
-		for key in self.rules.keys():
-			print key, ':', self.rules[key]
-		print 'start state:', self.startState
-		print 'final state:', self.finalState
-		print 'namesize:', self.__class__.namesize
+		return {
+			'rules' : self.rules,
+			'startState' : self.startState,
+			'finalState' : self.finalState,
+			'namesize' : self.__class__.namesize
+		};

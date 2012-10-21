@@ -28,6 +28,7 @@ class DFA(object):
 
 	def minStates(self):
 		paths = self.paths
+		sStates = set(self.sStates)
 		fStates = set(self.fStates)	
 		states = set(paths.keys())
 		nfStates = states - fStates
@@ -75,10 +76,13 @@ class DFA(object):
 							newpaths[state][a] = key
 							break
 		newfStates = set()
+		newsStates = set()
 		for state in newstates:
 			if state in fStates:
 				newfStates.add(state)
-		newsStates = set(newstates) - newfStates
+		for state in newstates:
+			if state in sStates:
+				newsStates.add(state);
 		return DFA(newstates, newpaths, newsStates, newfStates, alphabet)
 
 	def getPart(self, state, partition):
