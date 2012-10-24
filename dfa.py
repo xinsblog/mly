@@ -58,7 +58,7 @@ class DFA(object):
 					flag = True
 				newpartition.extend(newpart)
 			partition = newpartition
-			# print partition
+			print partition
 		# partition process end
 		newstates = [list(part)[0] for part in partition]
 		category = {list(part)[0]:list(part)[1:] for part in partition}
@@ -82,7 +82,7 @@ class DFA(object):
 				newfStates.add(state)
 		for state in newstates:
 			if state in sStates:
-				newsStates.add(state);
+				newsStates.add(state)
 		return DFA(newstates, newpaths, newsStates, newfStates, alphabet)
 
 	def getPart(self, state, partition):
@@ -101,5 +101,8 @@ class DFA(object):
 		print 'states:', self.states
 		print 'sStates:', self.sStates
 		print 'fStates:', self.fStates
-		print 'paths:', self.paths
+		print 'paths:'
+		keys = self.paths.keys()
+		for key in keys:
+			print key, ':', self.paths[key]
 		print 'alphabet:', self.alphabet

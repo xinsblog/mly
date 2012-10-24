@@ -104,6 +104,7 @@ class NFA(object):
 				sStates.append(key)
 			if self.finalState in states[key]:
 				fStates.append(key)
+		print states
 		states = states.keys()
 		return dfa.DFA(states, paths, sStates, fStates, alphabet)
 
@@ -135,9 +136,11 @@ class NFA(object):
 		return result
 
 	def show(self):
-		return {
-			'rules' : self.rules,
-			'startState' : self.startState,
-			'finalState' : self.finalState,
-			'namesize' : self.__class__.namesize
-		};
+		print	'rules:'
+		keys = self.rules.keys()
+		for key in keys:
+			print str(key), ':', self.rules[key]
+		print 	'startState:', self.startState
+		print 	'finalState:', self.finalState
+		print 	'namesize:', self.__class__.namesize
+		
