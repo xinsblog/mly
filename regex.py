@@ -63,28 +63,24 @@ class Regex(object):
 		for i in range(len(exp)-1, 0, -1):
 			if (exp[i] not in metachars) & (exp[i-1] not in metachars):
 				exp.insert(i, '+')
+			elif (exp[i] not in metachars) & (exp[i-1]=='*'):
+				exp.insert(i, '+')
+			elif (exp[i]=='(') & (exp[i-1] not in metachars):
+				exp.insert(i, '+')
+			elif (exp[i]=='(') & (exp[i-1]==')'):
+				exp.insert(i, '+')
+			elif (exp[i]=='(') & (exp[i-1]=='*'):
+				exp.insert(i, '+')
+			elif (exp[i] not in metachars) & (exp[i-1]==')'):
+				exp.insert(i, '+')
 		return exp
-
-	# postprocess the result of charStack
-	# combine each segment
-	def postprocess(self, charStack):
-		postfix = charStack[0]
-		if len(charStack)==1:
-			return postfix
-		for i in range(1, len(charStack)):
-			if len(charStack[i])>1 and charStack[i][1]=='*':
-				postfix += charStack[i][0:2] + '+' + charStack[i][2:]
-			else:
-				postfix += charStack[i][0] + '+' + charStack[i][1:]
-		return postfix
 
 	# translate the expression from middle-fix to postfix
 	def toPostfix(self):
 		string = self.exp
 		string = self.preprocess(string)
 		charStack = self.process(string)
-		postfix = self.postprocess(charStack)
-		return postfix
+		return charStack[0]
 
 	# convert a regular expression to a NFA 
 	def toNFA(self):

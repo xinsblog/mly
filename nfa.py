@@ -104,7 +104,7 @@ class NFA(object):
 				sStates.append(key)
 			if self.finalState in states[key]:
 				fStates.append(key)
-		print states
+		# print states
 		states = states.keys()
 		return dfa.DFA(states, paths, sStates, fStates, alphabet)
 
