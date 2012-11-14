@@ -58,7 +58,7 @@ class Regex(object):
 	# preprocess the regular expression
 	# add the "join" operator in different segment
 	def  preprocess(self, string):
-		metachars = ('(', ')', '+', '|', '*')
+		metachars = ('(', ')', '+', '|', '*','\\')
 		exp = list(string)
 		for i in range(len(exp)-1, 0, -1):
 			if (exp[i] not in metachars) & (exp[i-1] not in metachars):
@@ -87,7 +87,7 @@ class Regex(object):
 		exp = self.toPostfix()
 		operators = ('*', '+', '|')
 		stack = list()
-		for op in exp:
+		for op in exp:	
 			if op not in operators:
 				stack.append(nfa.NFA(op, self.toPostfix()))
 			elif op == '*':
