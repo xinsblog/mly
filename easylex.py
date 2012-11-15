@@ -43,7 +43,6 @@ class EasyLex(object):
 				n = r.toNFA()
 				d = n.toDFA()
 				d.minStates()
-				d.show()
 				rules[data[0]] = d.encode()
 		print rules
 		fw = open('test.txt', 'w')
@@ -128,5 +127,16 @@ class EasyLex(object):
 
 if __name__ == '__main__':
 	lex = EasyLex()
-	# lex.generateRules()
-	lex.analyze(lex.importRules())
+	while True:
+		choice = raw_input('''
+			1.generate new rules from test.pl
+			2.analyze source code from input.c
+			3.quit
+			Enter your choice
+			''');
+		if choice=='1':
+			lex.generateRules()
+		elif choice=='2':
+			lex.analyze(lex.importRules())
+		elif choice=='3':
+			break;

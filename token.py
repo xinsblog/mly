@@ -6,4 +6,4 @@ class Token(object):
 		self.lineno = lineno
 
 	def show(self):
-		print 'type:', self.type, 'value:', self.value, 'lineno:', self.lineno
+		print 'type:', self.type, '\t value:', self.value, '\t lineno:', self.lineno
