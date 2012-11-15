@@ -73,8 +73,8 @@ class NFA(object):
 		operators = ('*', '+', '|')
 		alphabet = set(exp) - set(operators)
 		alphabet = list(alphabet)
-		count = 65
-		key = chr(count)
+		count = 0
+		key = str(count)
 		# mapping from new keys to the aggregated states
 		states = dict() 	
 		states[key] = self.findEpsilon([self.startState])
@@ -91,7 +91,7 @@ class NFA(object):
 				key = self.getKey(states, newstate)
 				if key==0:
 					count += 1
-					key = chr(count)
+					key = str(count)
 					states[key] = newstate
 					queue.append(key)
 				if paths.has_key(newkey)==False:
