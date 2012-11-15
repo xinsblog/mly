@@ -1,7 +1,16 @@
+import json
+
 class DFA(object):
 	"""docstring for DFA"""
-	def __init__(self, states, paths, sStates, fStates, alphabet):
+	def __init__(self):
 		super(DFA, self).__init__()
+		self.states = list()
+		self.paths = list()
+		self.sStates = list()
+		self.fStates = list()
+		self.alphabet = list()
+
+	def setStates(self, states, paths, sStates, fStates, alphabet):
 		self.states = states
 		self.paths = paths
 		self.sStates = sStates
@@ -83,7 +92,8 @@ class DFA(object):
 		for state in newstates:
 			if state in sStates:
 				newsStates.add(state)
-		return DFA(newstates, newpaths, newsStates, newfStates, alphabet)
+		self.setStates(newstates, newpaths, newsStates, newfStates, alphabet)
+		# return DFA(newstates, newpaths, newsStates, newfStates, alphabet)
 
 	def getPart(self, state, partition):
 		paths = self.paths
@@ -106,3 +116,21 @@ class DFA(object):
 		for key in keys:
 			print key, ':', self.paths[key]
 		print 'alphabet:', self.alphabet
+
+	def encode(self):
+		dfa_data = {
+			'states':self.states,
+			'sStates':list(self.sStates),
+			'fStates':list(self.fStates),
+			'paths':self.paths,
+			'alphabet':self.alphabet
+		}
+		return dfa_data
+		
+
+	def decode(self, dfa_data):
+		self.states = dfa_data['states']
+		self.sStates = set(dfa_data['sStates'])
+		self.fStates = set(dfa_data['fStates'])
+		self.paths = dfa_data['paths']
+		self.alphabet = dfa_data['alphabet']

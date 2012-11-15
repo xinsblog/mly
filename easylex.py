@@ -1,3 +1,4 @@
+import json
 from collections import deque
 
 class EasyLex(object):
@@ -17,6 +18,7 @@ class EasyLex(object):
 			if op=='D' and (result[len(result)-1]!='\\' or isEacaped==True):
 				result += '(0|1|2|3|4|5|6|7|8|9)'
 		return result[1:]
+
 
 
 if __name__ == '__main__':

@@ -106,7 +106,10 @@ class NFA(object):
 				fStates.append(key)
 		# print states
 		states = states.keys()
-		return dfa.DFA(states, paths, sStates, fStates, alphabet)
+		d = dfa.DFA()
+		d.setStates(states, paths, sStates, fStates, alphabet)
+		return d
+		# return dfa.DFA(states, paths, sStates, fStates, alphabet)
 
 	def getKey(self, states, state):
 		for key in states.keys():
