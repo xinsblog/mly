@@ -45,12 +45,12 @@ class EasyLex(object):
 				d.minStates()
 				rules[data[0]] = d.encode()
 		print rules
-		fw = open('test.txt', 'w')
+		fw = open('test.dfa', 'w')
 		json.dump(rules, fw)
 		fw.flush()
 
 	def importRules(self):
-		fr = open('test.txt', 'r')		
+		fr = open('test.dfa', 'r')		
 		data = json.load(fr)
 		rules = dict()
 		# order is a list which define the order of the rules
@@ -64,7 +64,7 @@ class EasyLex(object):
 		
 								
 	def analyze(self, rules):
-		fsrc = open('input.c', 'r')
+		fsrc = open('test.c', 'r')
 		lineno = 0
 		order = rules['order']
 		commentRule = rules['comment']
@@ -121,8 +121,7 @@ class EasyLex(object):
 								headindex = endindex
 								break
 						endindex -= 1
-		for t in tokens:
-			t.show()
+		return tokens
 
 
 if __name__ == '__main__':
@@ -130,13 +129,15 @@ if __name__ == '__main__':
 	while True:
 		choice = raw_input('''
 			1.generate new rules from test.pl
-			2.analyze source code from input.c
+			2.analyze source code from test.c
 			3.quit
 			Enter your choice
 			''');
 		if choice=='1':
 			lex.generateRules()
 		elif choice=='2':
-			lex.analyze(lex.importRules())
+			tokens = lex.analyze(lex.importRules())
+			for t in tokens:
+				t.show()
 		elif choice=='3':
 			break;
