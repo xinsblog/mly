@@ -1,0 +1,1 @@
+A simple browser supporting basic html and a subset of JavaScript.
